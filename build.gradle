@@ -21,16 +21,33 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven {url 'https://repo.spring.io/snapshot'} //스냅샷 저장소 추가
 }
+ext["springAiVersion"] = "1.0.0-M2"
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    //    runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //spring AI
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
+    //Milvus AI
+    implementation 'org.springframework.ai:spring-ai-milvus-store-spring-boot-starter'
+
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
 }
 
 tasks.named('test') {
