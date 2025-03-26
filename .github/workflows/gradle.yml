@@ -19,11 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug secrets
-        run: echo "Actions read \${API_KEY} is [$API_KEY]"
-        env:
-          API_KEY: ${{ secrets.API_KEY }}
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -54,6 +49,7 @@ jobs:
   run-docker-image-on-ec2:
     needs: build
     runs-on: self-hosted
+    environment: dev
 
     steps:
       - name: Pull image from Docker Hub
@@ -65,25 +61,12 @@ jobs:
             sudo docker stop spring-cicd-test
             sudo docker rm spring-cicd-test
           fi
-      - name: Debug container env
-        run: |
-          sudo docker run --rm \
-            -e API_KEY=${{ secrets.API_KEY }} \
-            ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test \
-            sh -c 'echo CONTAINER sees: $API_KEY'
-
-      - name: Confirm env inside container
-        run: |
-          sudo docker run --rm \
-            -e spring.ai.openai.api-key=${{ secrets.API_KEY }} \
-            ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test \
-            sh -c 'printenv | grep spring.ai'
 
       - name: Run new container
         run: |
           sudo docker run -it -d \
             -p 8080:8080 \
-            -e spring.ai.openai.api-key=${{ secrets.API_KEY }} \
+            -e API_KEY=${{ secrets.API_KEY }} \
             --name spring-cicd-test \
             ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
