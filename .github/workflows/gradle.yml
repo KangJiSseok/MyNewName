@@ -76,7 +76,7 @@ jobs:
         run: |
           sudo docker run -it -d \
             -p 8080:8080 \
-            -e API_KEY=${{ secrets.API_KEY }} \
+            -e spring.ai.openai.api-key=${{ secrets.API_KEY }} \
             --name spring-cicd-test \
             ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
