@@ -72,6 +72,13 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test \
             sh -c 'echo CONTAINER sees: $API_KEY'
 
+      - name: Confirm env inside container
+        run: |
+          sudo docker run --rm \
+            -e spring.ai.openai.api-key=${{ secrets.API_KEY }} \
+            ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test \
+            sh -c 'printenv | grep spring.ai'
+
       - name: Run new container
         run: |
           sudo docker run -it -d \
