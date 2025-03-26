@@ -35,9 +35,8 @@ public class OpenAiService {
 	 * 실제 ChatGPT API (ChatCompletion) 호출
 	 */
 	public String getChatCompletion(String prompt) {
-		// ChatCompletion에 맞게 메시지 리스트 작성
 		OpenAiChatRequest requestBody = new OpenAiChatRequest(
-			"gpt-3.5-turbo", // 또는 "gpt-4"
+			"gpt-3.5-turbo",
 			List.of(
 				new OpenAiMessage("system", "You are a helpful assistant."),
 				new OpenAiMessage("user", prompt)
