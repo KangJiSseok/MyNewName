@@ -65,6 +65,12 @@ jobs:
             sudo docker stop spring-cicd-test
             sudo docker rm spring-cicd-test
           fi
+      - name: Debug container env
+        run: |
+          sudo docker run --rm \
+            -e API_KEY=${{ secrets.API_KEY }} \
+            ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test \
+            sh -c 'echo CONTAINER sees: $API_KEY'
 
       - name: Run new container
         run: |
