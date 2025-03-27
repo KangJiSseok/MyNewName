@@ -1,16 +1,27 @@
 package com.mynewname.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import java.util.Map;
 
-/**
- * AI가 생성한 영어 이름과 간단한 설명
- */
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ChatResponseDto {
-	private String name;
-	private String explanation;
+
+	private List<String> names;
+
+	private Map<String, ReasonDetail> reasons;
+
+	@Data
+	public static class ReasonDetail {
+		@JsonProperty("나이/시대적 유행")
+		private String ageTrend;
+
+		@JsonProperty("직업")
+		private String job;
+
+		@JsonProperty("MBTI")
+		private String mbti;
+	}
 }

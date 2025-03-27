@@ -15,7 +15,6 @@ import java.util.List;
 public class OpenAiChatRequest {
 	private String model;
 	private List<OpenAiMessage> messages;
-	private double temperature; // 창의성 정도
+	private double temperature;
 	private int max_tokens;
-	// 필요에 따라 top_p, frequency_penalty, presence_penalty, etc.
 }
