@@ -10,17 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: dev
-
     env:
       API_KEY: ${{ secrets.API_KEY }}
     permissions:
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Debug – list repository files (build)
+        run: |
+          echo "Build job workspace: ${{ github.workspace }}"
+          ls -al ${{ github.workspace }}
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -53,10 +56,18 @@ jobs:
     needs: build
     runs-on: self-hosted
     environment: dev
-
     steps:
-      - name: Pull latest image from Docker Hub
-        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+      - name: Checkout code on runner
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Debug – list repository files (EC2 runner)
+        run: |
+          echo "EC2 runner workspace: ${{ github.workspace }}"
+          ls -al ${{ github.workspace }}
+          echo "---"
+          ls -al ${{ github.workspace }}/docker-compose.prod.yml || echo "❌ docker-compose.prod.yml not found"
 
       - name: Set environment variables
         run: |
@@ -68,13 +79,6 @@ jobs:
           echo "MYSQL_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
           echo "MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
           echo "MYSQL_ROOT_PASSWORD=rootpass" >> $GITHUB_ENV
-
-      - name: Debug – check if docker-compose file exists
-        run: |
-          echo "🔍 Checking workspace: ${{ github.workspace }}"
-          ls -al ${{ github.workspace }}
-          echo "▶️ docker-compose.prod.yml content:"
-          cat ${{ github.workspace }}/docker-compose.prod.yml || echo "❌ 파일 없음"
 
       - name: Stop existing containers
         working-directory: ${{ github.workspace }}
