@@ -76,14 +76,14 @@ jobs:
           echo "---"
           cat .env
 
+      - name: Pull latest image
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test:latest
+
       - name: Clean up old Docker containers & images
         run: |
-          docker-compose -f docker-compose.prod.yml down || true
-          docker system prune -af || true
-
-      - name: Pull latest image
-        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test:latest
+          sudo docker compose -f docker-compose.prod.yml down || true
+          sudo docker system prune -af || true
 
       - name: Start Docker containers
         working-directory: ${{ github.workspace }}
-        run: docker-compose -f docker-compose.prod.yml up -d
+        run: sudo docker compose -f docker-compose.prod.yml up -d
