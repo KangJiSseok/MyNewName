@@ -13,6 +13,10 @@ public class ChatResponseDto {
 
 	private Map<String, ReasonDetail> reasons;
 
+	private List<Long> namesCount; // 각 이름별 추천 횟수
+
+	private Long totalCount;
+
 	@Data
 	public static class ReasonDetail {
 		@JsonProperty("나이/시대적 유행")
@@ -25,3 +29,4 @@ public class ChatResponseDto {
 		private String mbti;
 	}
 }
+
