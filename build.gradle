@@ -38,7 +38,7 @@ dependencies {
 
     //Milvus AI
 //    implementation 'org.springframework.ai:spring-ai-milvus-store-spring-boot-starter'
-    
+
 
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
