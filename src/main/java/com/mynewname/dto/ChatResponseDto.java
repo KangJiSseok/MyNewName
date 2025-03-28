@@ -13,7 +13,7 @@ public class ChatResponseDto {
 
 	private Map<String, ReasonDetail> reasons;
 
-	private List<Long> namesCount; // 각 이름별 추천 횟수
+	private List<Long> namesCount;
 
 	private Long totalCount;
 
@@ -25,8 +25,8 @@ public class ChatResponseDto {
 		@JsonProperty("직업")
 		private String job;
 
-		@JsonProperty("MBTI")
-		private String mbti;
+		@JsonProperty("성격")
+		private String personality;
 	}
 }
 
