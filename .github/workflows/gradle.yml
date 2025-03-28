@@ -52,27 +52,25 @@ jobs:
     environment: dev
 
     steps:
-      - name: Pull image from Docker Hub
+      - name: Pull latest image from Docker Hub
         run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
-      - name: Stop and remove old container
+      - name: Set environment variables
         run: |
-          if [ $(sudo docker ps -a -q -f name=spring-cicd-test) ]; then
-            sudo docker stop spring-cicd-test
-            sudo docker rm spring-cicd-test
-          fi
+          echo "DB_URL=jdbc:mysql://mysql:3306/MyNewName" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
+          echo "MYSQL_DATABASE=MyNewName" >> $GITHUB_ENV
+          echo "MYSQL_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "MYSQL_ROOT_PASSWORD=rootpass" >> $GITHUB_ENV
 
-      - name: Run new container
-        run: |
-          sudo docker run -it -d \
-            -p 8080:8080 \
-            -e API_KEY=${{ secrets.API_KEY }} \
-            -e DB_URL=${{ secrets.DB_URL }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            --name spring-cicd-test \
-            ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+      - name: Stop existing containers
+        run: docker compose -f docker-compose.prod.yml down
+
+      - name: Start containers using Docker Compose
+        run: docker compose -f docker-compose.prod.yml up -d --build
 
       - name: Delete unused Docker images
         run: sudo docker system prune -f
-
