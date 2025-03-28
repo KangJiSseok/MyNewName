@@ -21,10 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Debug – list repository files (build)
-        run: |
-          echo "Build job workspace: ${{ github.workspace }}"
-          ls -al ${{ github.workspace }}
+      - name: Set image tag using short SHA
+        id: tag
+        run: echo "IMAGE_TAG=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -41,10 +40,8 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build -x test
 
-
       - name: Docker image build
-        run: docker build --no-cache -t ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test .
-
+        run: docker build --no-cache -t ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test:${{ env.IMAGE_TAG }} .
 
       - name: Docker login
         uses: docker/login-action@v2
@@ -53,7 +50,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Docker Hub push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test:${{ env.IMAGE_TAG }}
 
   run-docker-image-on-ec2:
     needs: build
@@ -65,6 +62,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Debug – list repository files (EC2 runner)
         run: |
@@ -85,18 +85,22 @@ jobs:
           DB_USER=${{ secrets.DB_USER }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           API_KEY=${{ secrets.API_KEY }}
+          IMAGE_TAG=${IMAGE_TAG}
           EOF
           echo "✅ .env file created successfully"
           echo "---"
           cat .env
 
-      - name: Stop existing containers
+      - name: Pull latest Docker image
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test:${{ env.IMAGE_TAG }}
+
+      - name: Stop and remove existing containers
         working-directory: ${{ github.workspace }}
         run: sudo docker compose -f docker-compose.prod.yml down || true
 
       - name: Start containers using Docker Compose
         working-directory: ${{ github.workspace }}
-        run: sudo docker compose -f docker-compose.prod.yml up -d --build
+        run: sudo docker compose -f docker-compose.prod.yml up -d
 
       - name: Delete unused Docker images
         run: sudo docker system prune -f
