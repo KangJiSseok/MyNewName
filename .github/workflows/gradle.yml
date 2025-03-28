@@ -67,6 +67,9 @@ jobs:
           sudo docker run -it -d \
             -p 8080:8080 \
             -e API_KEY=${{ secrets.API_KEY }} \
+            -e DB_URL=${{ secrets.DB_URL }} \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --name spring-cicd-test \
             ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
