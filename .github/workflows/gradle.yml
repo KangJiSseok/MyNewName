@@ -14,6 +14,7 @@ jobs:
       API_KEY: ${{ secrets.API_KEY }}
     permissions:
       contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,6 +57,7 @@ jobs:
     needs: build
     runs-on: self-hosted
     environment: dev
+
     steps:
       - name: Checkout code on runner
         uses: actions/checkout@v4
@@ -67,18 +69,24 @@ jobs:
           echo "EC2 runner workspace: ${{ github.workspace }}"
           ls -al ${{ github.workspace }}
           echo "---"
-          ls -al ${{ github.workspace }}/docker-compose.prod.yml || echo "❌ docker-compose.prod.yml not found"
+          cat ${{ github.workspace }}/docker-compose.prod.yml || echo "❌ docker-compose.prod.yml not found"
 
-      - name: Set environment variables
+      - name: Create .env file for Docker Compose
+        working-directory: ${{ github.workspace }}
         run: |
-          echo "DB_URL=jdbc:mysql://mysql:3306/MyNewName" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
-          echo "MYSQL_DATABASE=MyNewName" >> $GITHUB_ENV
-          echo "MYSQL_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "MYSQL_ROOT_PASSWORD=rootpass" >> $GITHUB_ENV
+          cat <<EOF > .env
+          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER=${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          DB_URL=${{ secrets.DB_URL }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          API_KEY=${{ secrets.API_KEY }}
+          EOF
+          echo "✅ .env file created successfully"
+          echo "---"
+          cat .env
 
       - name: Stop existing containers
         working-directory: ${{ github.workspace }}
