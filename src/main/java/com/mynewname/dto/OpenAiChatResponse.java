@@ -18,5 +18,4 @@ public class OpenAiChatResponse {
 		private OpenAiMessage message;
 		private String finish_reason;
 	}
-	// usage 필드 등 필요 시 추가
 }

@@ -1,20 +1,20 @@
 spring:
-  #  datasource:
-  #    url: ${DB_URL}
-  #    username: ${DB_USER}
-  #    password: ${DB_PASSWORD}
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-  #  jpa:
-  #    database-platform: org.hibernate.dialect.MySQL8Dialect
-  #    show-sql: true
-  #    generate-ddl: true
-  #    database: mysql
-  #    hibernate:
-  #      ddl-auto: update
-  #    properties:
-  #      hibernate:
-  #        format_sql: true
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    generate-ddl: true
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
 
 
   application:
@@ -23,14 +23,11 @@ spring:
     openai:
       api-key: ${API_KEY}
       url: https://api.openai.com/v1/chat/completions
-      embedding:
-        options:
-          model: text-embedding-ada-002
       chat:
         options:
-          model: gpt-3.5-turbo
+          model: gpt-4o-mini
           temperature: 0.7
-          max-tokens: 200
+          max-tokens: 700
 
 #    vectorstore:
 #      chroma:
