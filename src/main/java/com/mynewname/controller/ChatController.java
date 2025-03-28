@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import com.mynewname.dto.ChatRequestDto;
 import com.mynewname.dto.ChatResponseDto;
 import com.mynewname.service.ChatService;
+
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -20,7 +22,7 @@ public class ChatController {
 	}
 
 	@PostMapping("/generate")
-	public Mono<ResponseEntity<ChatResponseDto>> generateName(@RequestBody ChatRequestDto requestDto) {
+	public Mono<ResponseEntity<ChatResponseDto>> generateName(@Valid @RequestBody ChatRequestDto requestDto) {
 		log.info("/api/chat/generate");
 		return chatService.generateEnglishName(requestDto)
 			.map(response -> {
